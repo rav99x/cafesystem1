@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bean Counter – Coffee Shop Log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e6b55">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bean Counter">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f3f0;--card:#fff;--ink:#14211d;--mute:#5b6a64;--line:#d6ddd9;--acc:#0e6b55;--on:#fff;--warn:#a85a08;--bad:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1614;--card:#17211e;--ink:#e8efec;--mute:#93a39d;--line:#2b3834;--acc:#3fb596;--on:#08140f;--warn:#f0a24a;--bad:#f4796b}}
+:root[data-theme="dark"]{--bg:#0e1614;--card:#17211e;--ink:#e8efec;--mute:#93a39d;--line:#2b3834;--acc:#3fb596;--on:#08140f;--warn:#f0a24a;--bad:#f4796b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 'Schibsted Grotesk',system-ui,sans-serif}
+header{max-width:640px;margin:0 auto;padding:18px 16px 4px}h1{font-size:26px;margin:0;letter-spacing:-.02em}header p{margin:2px 0 0;color:var(--mute);font-size:14px}
+main{max-width:640px;margin:0 auto;padding:8px 12px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+h2{font-size:18px;margin:0 0 10px}h3{font-size:14px;margin:14px 0 8px;color:var(--mute);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.full{grid-column:1/-1}
+.fl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute);font-weight:600}.fl i{color:var(--bad);font-style:normal}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;height:46px;padding:0 10px;width:100%;min-width:0}
+input[readonly],input.calc{background:transparent;border-style:dashed;font-weight:700}
+.err input,.err select{border-color:var(--bad)}.err>span{color:var(--bad)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tiles button{min-height:48px;text-align:left;padding:8px 12px;border:1.5px solid var(--line);border-left:5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:600 15px inherit;font-family:inherit}
+.tiles button.on{background:var(--acc);color:var(--on);border-color:var(--acc)}
+.btn{min-height:48px;border:0;border-radius:12px;background:var(--acc);color:var(--on);font:700 16px inherit;font-family:inherit;padding:0 16px;width:100%;margin-top:12px}
+.btn.alt{background:transparent;color:var(--acc);border:1.5px solid var(--acc);margin-top:8px}
+.flag{grid-column:1/-1;padding:10px 12px;border-radius:10px;font-weight:700;display:none}.flag.bad{display:block;background:var(--bad);color:#fff}.flag.ok{display:block;border:1px solid var(--line)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;min-height:56px;border:0;background:none;color:var(--mute);font:600 12px inherit;font-family:inherit}nav button.on{color:var(--acc);box-shadow:inset 0 3px 0 var(--acc)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kpi small{color:var(--mute);font-size:12px;display:block}.kpi b{font-size:21px}
+.bar{position:relative;display:flex;justify-content:space-between;gap:8px;padding:6px 8px;margin:4px 0;font-size:14px;z-index:0}.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);opacity:.18;border-radius:6px;z-index:-1}
+.mute{color:var(--mute);font-size:14px}.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.pill.Critical,.pill.Out{border-color:var(--bad);color:var(--bad)}.pill.Low{border-color:var(--warn);color:var(--warn)}.pill.Good{border-color:var(--acc);color:var(--acc)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.row:first-of-type{border-top:0}.row .m{display:flex;flex-wrap:wrap;gap:2px 10px}
+.x{border:0;background:none;color:var(--bad);font:600 13px inherit;font-family:inherit;min-height:40px;padding:0 6px}
+details{border-top:1px solid var(--line);padding:8px 0}summary{font-weight:700;min-height:40px;display:flex;align-items:center}
+textarea{height:140px;padding:8px;font-size:12px;font-family:monospace}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}#toast.on{opacity:1}
+</style></head><body>
+<header><h1>Bean Counter</h1><p>Sales, stock and waste log for the shop floor</p></header>
+<main id="app"></main><nav id="nav"></nav><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CATS=['Espresso','Americano','Latte','Flat White','Cappuccino','Spanish Latte','V60','Cold Brew','Matcha','Tea','Pastries','Desserts','Bottled Drinks','Other'];
+const PAY=['Cash','Card','Apple Pay','Delivery App','Complimentary','Other'],SHIFTS=['Morning','Afternoon','Evening'],ROLES=['Barista','Senior Barista','Cashier','Supervisor','Manager','Owner'];
+const TYPES=['Sale','Stock Purchase','Waste','Stock Adjustment','Stock Count','Return','Staff Consumption'],UN=['g','kg','ml','L','pcs','boxes','bags'];
+const WR=['Preparation Error','Over Extraction','Wrong Order','Spillage','Expired Product','Damaged Product','Customer Complaint','Staff Consumption','Equipment Issue','Other'];
+const ADJR=['Stock Correction','Damaged','Missing','Expired','Supplier Error','Counting Error','Other'];
+const ITEMS={Coffee:[['Espresso Beans','g'],['Filter Coffee Beans','g'],['Decaf Coffee','g']],Dairy:[['Full Fat Milk','ml'],['Low Fat Milk','ml'],['Oat Milk','ml'],['Almond Milk','ml']],Ingredients:[['Condensed Milk','ml'],['Chocolate Sauce','ml'],['Caramel Syrup','ml'],['Vanilla Syrup','ml'],['Matcha Powder','g'],['Sugar','g'],['Ice','g'],['Water','ml']],Packaging:[['8 oz Cups','pcs'],['12 oz Cups','pcs'],['16 oz Cups','pcs'],['Cup Lids','pcs'],['V60 Filters','pcs'],['Straws','pcs'],['Napkins','pcs'],['Takeaway Bags','pcs']],Other:[['Cleaning Supplies','pcs'],['Bottled Water','pcs'],['Custom Item','pcs']]};
+const IT=[];Object.entries(ITEMS).forEach(([c,l])=>l.forEach(([n,u])=>IT.push({n,c,u})));const ITM=Object.fromEntries(IT.map(i=>[i.n,i]));
+const mk=(product,category,price)=>({product,category,price}),rc=(product,ingredient,qty,unit)=>({product,ingredient,qty,unit});
+const seed=()=>({recs:[],emp:[{name:'Sample Barista',id:'E001',role:'Barista',shift:'Morning'},{name:'Sample Cashier',id:'E002',role:'Cashier',shift:'Afternoon'}],
+sup:[{name:'Sample Roasters',contact:'',phone:'',email:'',cat:'Coffee',notes:''}],br:[{name:'Main Branch'}],
+menu:[mk('Espresso','Espresso',12),mk('Americano','Americano',14),mk('Latte','Latte',18),mk('Flat White','Flat White',18),mk('Cappuccino','Cappuccino',18),mk('Spanish Latte','Spanish Latte',21),mk('V60','V60',24),mk('Cold Brew','Cold Brew',20),mk('Matcha Latte','Matcha',22),mk('Tea Pot','Tea',12),mk('Butter Croissant','Pastries',12),mk('Cheesecake Slice','Desserts',22),mk('Still Water 500ml','Bottled Drinks',5)],
+lev:[{item:'Espresso Beans',min:'2000',reorder:'4000',supplier:'Sample Roasters'},{item:'Full Fat Milk',min:'5000',reorder:'10000',supplier:''},{item:'12 oz Cups',min:'100',reorder:'300',supplier:''},{item:'Cup Lids',min:'100',reorder:'300',supplier:''}],
+rec:[rc('Spanish Latte','Espresso Beans',18,'g'),rc('Spanish Latte','Full Fat Milk',180,'ml'),rc('Spanish Latte','Condensed Milk',30,'ml'),rc('Spanish Latte','12 oz Cups',1,'pcs'),rc('Spanish Latte','Cup Lids',1,'pcs'),rc('Latte','Espresso Beans',18,'g'),rc('Latte','Full Fat Milk',200,'ml'),rc('Latte','12 oz Cups',1,'pcs'),rc('Latte','Cup Lids',1,'pcs'),rc('V60','Filter Coffee Beans',15,'g'),rc('V60','V60 Filters',1,'pcs'),rc('V60','12 oz Cups',1,'pcs')]});
+let S;try{S=JSON.parse(localStorage.getItem('cs1')||'null')}catch(e){}S=S||seed();
+const persist=()=>{try{localStorage.setItem('cs1',JSON.stringify(S))}catch(e){}};
+const p2=n=>String(n).padStart(2,'0'),today=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())},nowT=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
+const shiftNow=()=>{const h=+nowT().slice(0,2);return h<12?'Morning':h<17?'Afternoon':'Evening'};
+const fmt=n=>(+n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}),r1=n=>Math.round((+n||0)*100)/100;
+const sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
+const grp=(a,kf,vf)=>{const m={};a.forEach(x=>{const k=kf(x)||'Unspecified';m[k]=(m[k]||0)+(+vf(x)||0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+const bars=(rows,f=fmt)=>{const mx=Math.max(1,...rows.map(r=>Math.abs(r[1])));return rows.length?rows.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><b>${f(v)}</b><i style="width:${Math.abs(v)/mx*100}%"></i></div>`).join(''):'<p class="mute">No data yet.</p>'};
+const opts1=l=>l.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}">${esc(o[1])}</option>`:`<option>${esc(o)}</option>`).join('');
+const opts=(l,ph='Select…')=>`<option value="">${ph}</option>`+l.map(o=>o&&o.g?`<optgroup label="${esc(o.g)}">${opts1(o.l)}</optgroup>`:opts1([o])).join('');
+const itemOpts=()=>Object.entries(ITEMS).map(([g,l])=>({g,l:l.map(x=>x[0])}));
+const mixOpts=()=>[...Object.entries(ITEMS).map(([g,l])=>({g,l:l.map(x=>['I|'+x[0],x[0]])})),{g:'Menu products',l:S.menu.map(m=>['P|'+m.product,m.product])}];
+const toast=m=>{const t=$('#toast');t.textContent=m;t.className='on';clearTimeout(toast.h);toast.h=setTimeout(()=>t.className='',2200)};
+const gen=(pre,key)=>{const d=today().slice(2).replace(/-/g,'');const s=new Set(S.recs.map(r=>r[key]).filter(x=>x&&x.startsWith(pre+'-'+d)));return `${pre}-${d}-${String(s.size+1).padStart(3,'0')}`};
+const fac=u=>u==='kg'||u==='L'?1000:1;
+/* ---------- stock engine ---------- */
+function engine(){const st={},cost={},cogs={};
+ const use=(p,q)=>S.rec.filter(r=>r.product===p).map(r=>({item:r.ingredient,q:(+r.qty||0)*q*fac(r.unit)}));
+ [...S.recs].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).forEach(r=>{
+  if(r.type==='Stock Purchase'){st[r.item]=(st[r.item]||0)+r.baseQty;if(r.baseQty)cost[r.item]=r.total/r.baseQty}
+  else if(r.type==='Stock Adjustment')st[r.item]=(st[r.item]||0)+(r.atype==='Increase'?1:-1)*r.baseQty;
+  else if(r.type==='Stock Count')st[r.item]=r.actual;
+  else if(r.type==='Sale'){cogs[r.uid]=0;use(r.product,r.qty).forEach(u=>{st[u.item]=(st[u.item]||0)-u.q;cogs[r.uid]+=u.q*(cost[u.item]||0)})}
+  else if(r.type==='Waste'||r.type==='Staff Consumption'){if(r.item)st[r.item]=(st[r.item]||0)-r.baseQty;else use(r.product,r.qty).forEach(u=>st[u.item]=(st[u.item]||0)-u.q)}});
+ return{st,cost,cogs,use}}
+let E=engine(),tab='entry',T='',G={date:today(),time:nowT(),emp:'',shift:shiftNow(),branch:''};
+const R=true;
+const SPEC={
+'Sale':{h:'Sales entry',f:[{k:'order',l:'Order ID',t:'text',r:R},{k:'cat',l:'Product category',t:'sel',o:()=>CATS,r:R},{k:'product',l:'Product name',t:'sel',o:()=>[],r:R},{k:'pname',l:'Custom product name',t:'text',r:R,sh:v=>v.product==='Custom product'},{k:'qty',l:'Quantity sold',t:'number',r:R},{k:'price',l:'Unit price',t:'number',r:R},{k:'disc',l:'Discount amount',t:'number'},{k:'total',l:'Total sale',t:'calc'},{k:'net',l:'Net sale',t:'calc'},{k:'pay',l:'Payment method',t:'sel',o:()=>PAY,r:R},{k:'notes',l:'Notes',t:'text'}]},
+'Stock Purchase':{h:'Stock purchase',f:[{k:'pid',l:'Purchase ID',t:'text',r:R},{k:'pdate',l:'Purchase date',t:'date',r:R},{k:'supplier',l:'Supplier name',t:'sel',o:()=>S.sup.map(s=>s.name),r:R},{k:'item',l:'Inventory item',t:'sel',o:itemOpts,r:R},{k:'itemCat',l:'Inventory category',t:'calc',s:1},{k:'qty',l:'Quantity purchased',t:'number',r:R},{k:'unit',l:'Unit',t:'sel',o:()=>UN,r:R},{k:'cost',l:'Cost per unit',t:'number',r:R},{k:'total',l:'Total purchase cost',t:'calc'},{k:'invoice',l:'Invoice number',t:'text',r:R},{k:'pstatus',l:'Payment status',t:'sel',o:()=>['Paid','Pending','Partial'],r:R},{k:'receiver',l:'Employee receiving stock',t:'sel',o:()=>S.emp.map(e=>e.name),r:R},{k:'notes',l:'Notes',t:'text'}]},
+'Waste':{h:'Waste and loss',f:[{k:'wid',l:'Waste ID',t:'text',r:R},{k:'item',l:'Inventory item or product',t:'sel',o:mixOpts,r:R},{k:'qty',l:'Quantity wasted',t:'number',r:R},{k:'unit',l:'Unit',t:'sel',o:()=>UN,r:R},{k:'reason',l:'Waste reason',t:'sel',o:()=>WR,r:R},{k:'est',l:'Estimated cost',t:'number'},{k:'notes',l:'Notes',t:'text'}]},
+'Stock Adjustment':{h:'Stock adjustment',f:[{k:'item',l:'Inventory item',t:'sel',o:itemOpts,r:R},{k:'atype',l:'Adjustment type',t:'sel',o:()=>['Increase','Decrease'],r:R},{k:'qty',l:'Quantity',t:'number',r:R},{k:'unit',l:'Unit',t:'sel',o:()=>UN,r:R},{k:'reason',l:'Reason',t:'sel',o:()=>ADJR,r:R},{k:'notes',l:'Notes',t:'text'}]},
+'Stock Count':{h:'Physical stock count',f:[{k:'item',l:'Inventory item',t:'sel',o:itemOpts,r:R},{k:'sys',l:'System stock quantity',t:'calc'},{k:'actual',l:'Actual physical quantity',t:'number',r:R},{k:'diff',l:'Difference',t:'calc'},{k:'unit',l:'Unit (count in this unit)',t:'calc',s:1},{k:'flag',t:'flag'},{k:'notes',l:'Notes',t:'text'}]},
+'Return':{h:'Return',f:[{k:'order',l:'Original order ID',t:'text'},{k:'product',l:'Product name',t:'sel',o:()=>S.menu.map(m=>m.product),r:R},{k:'qty',l:'Quantity returned',t:'number',r:R},{k:'net',l:'Refund amount',t:'number',r:R},{k:'pay',l:'Refunded via',t:'sel',o:()=>PAY,r:R},{k:'notes',l:'Notes',t:'text'}]},
+'Staff Consumption':{h:'Staff consumption',f:[{k:'item',l:'Inventory item or product',t:'sel',o:mixOpts,r:R},{k:'qty',l:'Quantity',t:'number',r:R},{k:'unit',l:'Unit',t:'sel',o:()=>UN,r:R},{k:'notes',l:'Notes',t:'text'}]}};
+function fld(f){if(f.t==='flag')return'<div id="x_flag" class="flag"></div>';const id='f_'+f.k;
+ const inp=f.t==='sel'?`<select id="${id}">${opts(f.o())}</select>`:f.t==='calc'?`<input id="${id}" class="calc" readonly>`:`<input id="${id}" type="${f.t}" ${f.t==='number'?'inputmode="decimal" step="any" min="0"':''}>`;
+ return`<label class="fl ${f.t==='number'||f.t==='calc'||f.t==='date'?'':'full'}" id="w_${f.k}"><span>${f.l}${f.r?' <i>*</i>':''}</span>${inp}</label>`}
+const vals=()=>Object.fromEntries($$('#sec [id^=f_]').map(e=>[e.id.slice(2),e.value]));
+function renderSec(pre={}){const s=$('#sec');if(!T){s.innerHTML='<p class="mute" style="padding:8px">Pick a transaction type to see its form.</p>';return}
+ const sp=SPEC[T];s.innerHTML=`<section class="card"><h2>${sp.h}</h2><div class="grid">${sp.f.map(fld).join('')}</div>
+ <button class="btn" onclick="submit(0)">Save ${T.toLowerCase()}</button>${T==='Sale'?'<button class="btn alt" onclick="submit(1)">Save and add another item to this order</button>':''}</section>`;
+ const set=(k,v)=>{const e=$('#f_'+k);if(e&&v!==undefined)e.value=v};
+ set('order',pre.order||gen('ORD','order'));set('pid',gen('PUR','pid'));set('wid',gen('WST','wid'));set('pdate',today());set('qty','');
+ if(T==='Return')set('order','');recalc()}
+function recalc(src){if(!T)return;const v=vals(),n=k=>+v[k]||0,set=(k,x)=>{const e=$('#f_'+k);if(e)e.value=typeof x==='number'?r1(x):x};
+ if(T==='Sale'){const t=n('qty')*n('price');set('total',t);set('net',t-n('disc'))}
+ if(T==='Stock Purchase'){set('total',n('qty')*n('cost'));set('itemCat',ITM[v.item]?.c||'')}
+ if(T==='Waste'&&src!=='est'&&v.item){const[a,b]=v.item.split('|');const c=a==='I'?n('qty')*fac(v.unit)*(E.cost[b]||0):sum(E.use(b,1),u=>u.q*(E.cost[u.item]||0))*n('qty');set('est',c)}
+ if(T==='Stock Count'){const it=ITM[v.item];set('unit',it?.u||'');const sys=v.item?(E.st[v.item]||0):'';set('sys',sys);
+  const fl=$('#x_flag');if(v.item&&v.actual!==''){const d=n('actual')-sys;set('diff',d);fl.className='flag '+(d<0?'bad':'ok');fl.textContent=d<0?`Stock shortage: ${r1(-d)} ${it.u} missing`:d>0?`Surplus of ${r1(d)} ${it.u}`:'Count matches the system'}else{set('diff','');fl.className='flag'}}
+ SPEC[T].f.forEach(f=>{if(f.sh)$('#w_'+f.k).style.display=f.sh(v)?'':'none'})}
+function onFld(k){const v=vals();
+ if(k==='cat'){$('#f_product').innerHTML=opts([...S.menu.filter(m=>m.category===v.cat).map(m=>m.product),'Custom product'])}
+ if(k==='product'&&T==='Sale'){const m=S.menu.find(m=>m.product===v.product&&m.category===v.cat);if(m)$('#f_price').value=m.price}
+ if(k==='item'&&$('#f_unit')&&$('#f_unit').tagName==='SELECT'){let u='';if(T==='Waste'||T==='Staff Consumption'){const[a,b]=v.item.split('|');u=a==='I'?ITM[b]?.u:'pcs'}else u=ITM[v.item]?.u;if(u)$('#f_unit').value=u}
+ recalc(k)}
+function onGen(id){const e=$('#'+id);G[id.slice(2)]=e.value;if(id==='g_emp'){const m=S.emp.find(x=>x.name===e.value);$('#g_empId').value=m?m.id:'';if(m&&m.shift)G.shift=$('#g_shift').value=m.shift}}
+function submit(keep){const v=vals();let bad=0;
+ const mark=(w,b)=>{const e=$('#'+w);if(e)e.classList.toggle('err',b);if(b)bad++};
+ ['date','time','emp','shift','branch'].forEach(k=>mark('w_'+k,!G[k]));
+ SPEC[T].f.forEach(f=>{if(!f.r||(f.sh&&!f.sh(v)))return;const x=v[f.k];mark('w_'+f.k,x===''||(f.t==='number'&&f.k!=='actual'&&!(+x>0)))});
+ if(bad){toast('Complete the highlighted fields');$('.err')?.scrollIntoView({block:'center'});return}
+ const m=S.emp.find(x=>x.name===G.emp);
+ const r={uid:Date.now().toString(36)+Math.random().toString(36).slice(2,5),type:T,date:G.date,time:G.time,emp:G.emp,empId:m?m.id:'',shift:G.shift,branch:G.branch};
+ SPEC[T].f.forEach(f=>{if(f.t==='flag'||(f.sh&&!f.sh(v)))return;let x=v[f.k];if(f.t==='number'||f.t==='calc')x=x!==''&&!isNaN(+x)?+x:x;r[f.k]=x});
+ if(r.pname){r.product=r.pname;delete r.pname}
+ if((T==='Waste'||T==='Staff Consumption')){const[a,b]=r.item.split('|');if(a==='I'){r.item=b;r.itemCat=ITM[b]?.c}else{r.product=b;delete r.item}}
+ if(r.item&&T!=='Stock Count')r.baseQty=r.qty*fac(r.unit);
+ if(T==='Stock Count'){r.itemCat=ITM[r.item]?.c;r.baseQty=r.actual;r.flag=r.diff<0?'Shortage':r.diff>0?'Surplus':'Match'}
+ if(T==='Sale'&&r.pay==='Complimentary')r.net=0;
+ S.recs.push(r);persist();E=engine();toast(T+' saved');renderSec(keep?{order:r.order}:{})}
+function setT(t){T=t;$$('#tiles button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));renderSec()}
+function vEntry(){G.date=today();G.time=nowT();
+ return`<section class="card"><h2>General information</h2><div class="grid">
+ <label class="fl" id="w_date"><span>Date <i>*</i></span><input type="date" id="g_date"></label>
+ <label class="fl" id="w_time"><span>Time <i>*</i></span><input type="time" id="g_time"></label>
+ <label class="fl full" id="w_emp"><span>Employee name <i>*</i></span><select id="g_emp">${opts(S.emp.map(e=>e.name))}</select></label>
+ <label class="fl"><span>Employee ID</span><input id="g_empId" readonly></label>
+ <label class="fl" id="w_shift"><span>Shift <i>*</i></span><select id="g_shift">${opts(SHIFTS)}</select></label>
+ <label class="fl full" id="w_branch"><span>Branch or location <i>*</i></span><select id="g_branch">${opts(S.br.map(b=>b.name))}</select></label></div>
+ <h3>Transaction type <i style="color:var(--bad);font-style:normal">*</i></h3><div class="tiles" id="tiles">${TYPES.map(t=>`<button type="button" data-t="${t}">${t}</button>`).join('')}</div></section><div id="sec"></div>`}
+function initEntry(){if(!G.branch&&S.br.length===1)G.branch=S.br[0].name;
+ ['date','time','emp','shift','branch'].forEach(k=>{$('#g_'+k).value=G[k]||''});const m=S.emp.find(x=>x.name===G.emp);$('#g_empId').value=m?m.id:'';
+ $$('#tiles button').forEach(b=>b.onclick=()=>setT(b.dataset.t));
+ const a=$('#app');a.oninput=a.onchange=e=>{const id=e.target.id||'';if(id.startsWith('g_'))onGen(id);else if(id.startsWith('f_'))onFld(id.slice(2))};setT(T)}
+/* ---------- stock ---------- */
+function status(i){const s=E.st[i]??null,l=S.lev.find(x=>x.item===i);if(s===null)return l?'Out of Stock':'';if(s<=0)return'Out of Stock';if(!l)return'Good';if(s<=+l.min)return'Critical';if(s<=+l.reorder)return'Low Stock';return'Good'}
+const pill=s=>s?`<span class="pill ${s.split(' ')[0]}">${s}</span>`:'';
+function vStock(){const rows=IT.map(i=>({...i,s:E.st[i.n],st:status(i.n)})),need=rows.filter(r=>/Low|Crit|Out/.test(r.st));
+ const line=r=>`<div class="row"><div class="m"><b>${esc(r.n)}</b><span class="mute">${r.s===undefined?'not counted':r1(r.s)+' '+r.u}</span></div>${pill(r.st)}</div>`;
+ return`<section class="card"><h2>Needs reorder (${need.length})</h2>${need.length?need.map(r=>{const l=S.lev.find(x=>x.item===r.n);return line(r)+(l&&l.supplier?`<div class="mute" style="margin-top:-6px">Supplier: ${esc(l.supplier)}</div>`:'')}).join(''):'<p class="mute">Nothing below its reorder level. Set levels under Setup › Stock levels.</p>'}</section>
+ <section class="card"><h2>Current inventory levels</h2>${rows.map(r=>line(r)).join('')}<p class="mute">Stock is in base units (g, ml, pcs). It rises with purchases, falls with sales (via recipes), waste and staff use, and resets on each stock count.</p></section>`}
+/* ---------- dashboard ---------- */
+function vDash(){const t=today(),mo=t.slice(0,7),by=ty=>S.recs.filter(r=>r.type===ty),sl=by('Sale'),rt=by('Return'),ws=by('Waste'),pu=by('Stock Purchase'),ct=by('Stock Count');
+ const net=(f)=>sum(sl.filter(f),r=>r.net)-sum(rt.filter(f),r=>r.net),inM=r=>r.date.startsWith(mo),M=sl.filter(inM);
+ const sM=net(inM),orders=new Set(M.map(r=>r.order)).size,cogs=sum(M,r=>E.cogs[r.uid]),inv=sum(Object.entries(E.st),([k,s])=>Math.max(s,0)*(E.cost[k]||0));
+ const varV=sum(ct.filter(inM),r=>r.diff*(E.cost[r.item]||0)),k=(l,v)=>`<div class="kpi"><small>${l}</small><b>${v}</b></div>`;
+ const wName=r=>r.item||r.product;
+ return`<div class="kpis" style="margin-top:10px">${k("Today's sales",fmt(net(r=>r.date===t)))}${k('Monthly sales',fmt(sM))}${k('Orders this month',orders)}${k('Average order value',fmt(orders?sM/orders:0))}
+ ${k('Gross profit (est.)',fmt(sM-cogs))}${k('Inventory value',fmt(inv))}${k('Waste today',fmt(sum(ws.filter(r=>r.date===t),r=>r.est)))}${k('Waste this month',fmt(sum(ws.filter(inM),r=>r.est)))}
+ ${k('Purchases this month',fmt(sum(pu.filter(inM),r=>r.total)))}${k('Stock variance (value)',fmt(varV))}</div>
+ <section class="card"><h2>Top 5 products (month, units)</h2>${bars(grp(M,r=>r.product,r=>r.qty).slice(0,5),v=>r1(v))}</section>
+ <section class="card"><h2>Sales by category</h2>${bars(grp(M,r=>r.cat,r=>r.net))}</section>
+ <section class="card"><h2>Sales by payment method</h2>${bars(grp(M,r=>r.pay,r=>r.net))}</section>
+ <section class="card"><h2>Sales by employee</h2>${bars(grp(M,r=>r.emp,r=>r.net))}</section>
+ <section class="card"><h2>Sales by shift</h2>${bars(grp(M,r=>r.shift,r=>r.net))}</section>
+ <section class="card"><h2>Most wasted items (cost)</h2>${bars(grp(ws.filter(inM),wName,r=>r.est).slice(0,5))}</section>
+ <section class="card"><h2>Supplier spending (month)</h2>${bars(grp(pu.filter(inM),r=>r.supplier,r=>r.total))}</section>
+ <section class="card"><h2>Stock health</h2><div class="kpis">${k('Low or critical',IT.filter(i=>/Low|Crit/.test(status(i.n))).length)}${k('Out of stock',IT.filter(i=>status(i.n)==='Out of Stock').length)}</div></section>`}
+/* ---------- records ---------- */
+const COLS=[['uid','Record ID'],['date','Date'],['time','Time'],['type','Transaction Type'],['branch','Branch'],['shift','Shift'],['emp','Employee'],['empId','Employee ID'],['order','Order ID'],['pid','Purchase ID'],['wid','Waste ID'],['cat','Product Category'],['product','Product'],['item','Inventory Item'],['itemCat','Inventory Category'],['qty','Quantity'],['unit','Unit'],['price','Unit Price'],['disc','Discount'],['total','Total (sale or purchase)'],['net','Net Sale or Refund'],['pay','Payment Method'],['supplier','Supplier'],['invoice','Invoice No'],['pstatus','Payment Status'],['receiver','Received By'],['reason','Reason'],['atype','Adjustment Type'],['sys','System Qty'],['actual','Actual Qty'],['diff','Difference'],['flag','Stock Flag'],['cost','Cost per Unit'],['est','Waste Cost (Est.)'],['cogs','Recipe Cost (Est.)'],['baseQty','Qty in base unit'],['notes','Notes']];
+const tsv=()=>[COLS.map(c=>c[1]).join('\t'),...S.recs.map(r=>COLS.map(([k])=>String(k==='cogs'?(E.cogs[r.uid]??''):(r[k]??'')).replace(/[\t\n]/g,' ')).join('\t'))].join('\n');
+let del='';
+function showTsv(){const a=$('#tsv');a.value=tsv();a.style.display='block';a.select();try{navigator.clipboard.writeText(a.value).then(()=>toast('Copied. Paste into Sheets or Excel'),()=>toast('Text selected. Copy it manually'))}catch(e){toast('Text selected. Copy it manually')}}
+function rmRec(u){if(del!==u){del=u;render();return}S.recs=S.recs.filter(r=>r.uid!==u);del='';persist();E=engine();render()}
+function vRecs(){const l=[...S.recs].reverse().slice(0,60);
+ return`<section class="card"><h2>Export for dashboards</h2><p class="mute">${S.recs.length} records, one row each with a fixed set of columns. Paste into Google Sheets or Excel and build pivot tables from it.</p><button class="btn" onclick="showTsv()">Copy all records</button><textarea id="tsv" readonly style="display:none;margin-top:10px"></textarea></section>
+ <section class="card"><h2>Latest records</h2>${l.length?l.map(r=>`<div class="row"><div class="m"><b>${r.type}</b><span>${esc(r.product||r.item||'')}</span><span class="mute">${r.date} ${r.time} · ${esc(r.emp)}</span></div><div><b>${r.net!==undefined?fmt(r.net):r.est!==undefined?fmt(r.est):r.total!==undefined?fmt(r.total):r.diff!==undefined?r1(r.diff):r1(r.qty)}</b> <button class="x" onclick="rmRec('${r.uid}')">${del===r.uid?'Tap to confirm':'Delete'}</button></div></div>`).join(''):'<p class="mute">Nothing logged yet. Records you save appear here.</p>'}</section>`}
+/* ---------- setup ---------- */
+const LISTS={emp:['Employees',[['name','Employee name'],['id','Employee ID'],['role','Role',ROLES],['shift','Shift',SHIFTS]]],
+sup:['Suppliers',[['name','Supplier name'],['contact','Contact person'],['phone','Phone number'],['email','Email'],['cat','Inventory category',()=>Object.keys(ITEMS)],['notes','Notes']]],
+br:['Branches',[['name','Branch name']]],menu:['Menu and prices',[['product','Product'],['category','Category',CATS],['price','Unit price','n']]],
+lev:['Stock levels',[['item','Inventory item',()=>IT.map(i=>i.n)],['min','Minimum stock (base unit)','n'],['reorder','Reorder level (base unit)','n'],['supplier','Supplier',()=>S.sup.map(s=>s.name)]]],
+rec:['Recipes (stock used per product)',[['product','Product',()=>S.menu.map(m=>m.product)],['ingredient','Ingredient',()=>IT.map(i=>i.n)],['qty','Quantity used','n'],['unit','Unit',['g','ml','pcs']]]]};
+const OPEN=new Set();
+function addRow(l){const row={};LISTS[l][1].forEach(([k])=>row[k]=$(`#l_${l}_${k}`).value.trim());if(!row[LISTS[l][1][0][0]]){toast('Fill in the first field');return}S[l].push(row);persist();OPEN.add(l);render()}
+function delRow(l,i){S[l].splice(i,1);persist();OPEN.add(l);render()}
+function vSetup(){return`<section class="card"><h2>Setup</h2><p class="mute">These lists feed the dropdowns on the Log tab.</p>`+Object.entries(LISTS).map(([l,[title,cols]])=>{
+ const last=n=>S.recs.filter(r=>r.type==='Stock Purchase'&&r.supplier===n).map(r=>r.date).sort().pop();
+ return`<details ${OPEN.has(l)?'open':''} ontoggle="this.open?OPEN.add('${l}'):OPEN.delete('${l}')"><summary>${title} (${S[l].length})</summary>
+ ${S[l].map((r,i)=>`<div class="row"><div class="m">${cols.map(([k],j)=>`<span ${j?'class="mute"':'style="font-weight:700"'}>${esc(r[k])}</span>`).join('')}${l==='sup'?`<span class="mute">Last purchase: ${last(r.name)||'none'}</span>`:''}</div><button class="x" onclick="delRow('${l}',${i})">Remove</button></div>`).join('')}
+ <div class="grid" style="margin-top:8px">${cols.map(([k,lb,o])=>`<label class="fl full"><span>${lb}</span>${o&&o!=='n'?`<select id="l_${l}_${k}">${opts(typeof o==='function'?o():o)}</select>`:`<input id="l_${l}_${k}" ${o==='n'?'type="number" inputmode="decimal" step="any"':''}>`}</label>`).join('')}</div><button class="btn alt" onclick="addRow('${l}')">Add to ${title.split(' (')[0].toLowerCase()}</button></details>`}).join('')+'</section>'}
+/* ---------- shell ---------- */
+const TABS=[['entry','Log',vEntry],['stock','Stock',vStock],['dash','Dashboard',vDash],['recs','Records',vRecs],['setup','Setup',vSetup]];
+function render(){const t=TABS.find(x=>x[0]===tab);$('#app').oninput=$('#app').onchange=null;$('#app').innerHTML=t[2]();if(tab==='entry')initEntry();
+ $('#nav').innerHTML=TABS.map(x=>`<button class="${x[0]===tab?'on':''}" onclick="tab='${x[0]}';del='';render();scrollTo(0,0)">${x[1]}</button>`).join('')}
+render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+  });
+}
+</script>
+
+</body></html>

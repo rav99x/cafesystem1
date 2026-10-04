@@ -1,0 +1,25 @@
+{
+  "name": "Bean Counter \u2013 Coffee Shop Sales & Inventory",
+  "short_name": "Bean Counter",
+  "description": "Coffee shop sales, inventory, waste and dashboard tracker.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f3f0",
+  "theme_color": "#0e6b55",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
